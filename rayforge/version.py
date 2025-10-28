@@ -1,22 +1,29 @@
 import os
+import logging
 import subprocess
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 __dir__ = os.path.dirname(__file__)
 
 
 def get_version_from_git() -> Optional[str]:
     try:
-        output = subprocess.check_output(
+        version = subprocess.check_output(
             ["git", "describe"], stderr=subprocess.DEVNULL, cwd=__dir__
-        )
+        ).decode("ascii").strip()
     except (
         subprocess.CalledProcessError,
         FileNotFoundError,
         NotADirectoryError,
     ):
+        logger.debug("Failed to source version from git")
         return None
-    return output.decode("ascii").strip()
+
+
+    logger.debug(f"Using version sourced from git: {version}")
+    return version
 
 
 def get_version_from_pkg() -> Optional[str]:
@@ -26,8 +33,11 @@ def get_version_from_pkg() -> Optional[str]:
         return None
 
     try:
-        return version("rayforge")
+        output = version("rayforge")
+        logger.debug(f"Using version sourced from pkg: {output}")
+        return output
     except PackageNotFoundError:
+        logger.debug("Failed to source version from pkg")
         return None
 
 
@@ -35,6 +45,9 @@ def get_version_from_file() -> Optional[str]:
     version_file = os.path.join(__dir__, "version.txt")
     try:
         with open(version_file, "r") as f:
-            return f.read().strip()
+            version = f.read().strip()
+            logger.debug(f"Using version sourced from version.txt: {version}")
+            return version
     except FileNotFoundError:
+        logger.debug("Failed to source version from version.txt")
         return None
