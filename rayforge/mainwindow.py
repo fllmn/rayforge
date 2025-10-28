@@ -5,6 +5,7 @@ from gi.repository import Gtk, Gio, GLib, Gdk, Adw
 import asyncio
 
 from . import __version__
+from .version import *
 from .shared.tasker import task_mgr
 from .context import get_context
 from .machine.driver.driver import DeviceStatus, DeviceState
@@ -182,6 +183,10 @@ class MainWindow(Adw.ApplicationWindow):
         window_title = Adw.WindowTitle(
             title=self.get_title() or "", subtitle=__version__ or ""
         )
+        logger.debug(f"Subtitle {__version__}")
+        logger.debug(f"File {get_version_from_file()}")
+        logger.debug(f"Pkg {get_version_from_pkg()}")
+        logger.debug(f"Git{get_version_from_git()}")
         header_bar.set_title_widget(window_title)
 
         # Create and add the main toolbar.

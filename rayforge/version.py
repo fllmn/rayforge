@@ -9,6 +9,7 @@ __dir__ = os.path.dirname(__file__)
 
 
 def get_version_from_git() -> Optional[str]:
+    logger.debug("Trying to source version from git")
     try:
         version = subprocess.check_output(
             ["git", "describe"], stderr=subprocess.DEVNULL, cwd=__dir__
@@ -27,6 +28,7 @@ def get_version_from_git() -> Optional[str]:
 
 
 def get_version_from_pkg() -> Optional[str]:
+    logger.debug("Trying to source version from pkg")
     try:
         from importlib.metadata import version, PackageNotFoundError
     except ImportError:
@@ -42,6 +44,8 @@ def get_version_from_pkg() -> Optional[str]:
 
 
 def get_version_from_file() -> Optional[str]:
+
+    logger.debug("Trying to source version from version.txt")
     version_file = os.path.join(__dir__, "version.txt")
     try:
         with open(version_file, "r") as f:
